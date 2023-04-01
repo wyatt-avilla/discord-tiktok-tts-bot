@@ -1,17 +1,21 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord import FFmpegPCMAudio
+from json_request import request_tts_conversion
 from sensitive import TOKEN
 
-bot = commands.Bot(command_prefix = "`", intents = discord.Intents.all())
+intents = discord.Intents.default()
+intents.message_content = True
+intents.voice_states = True
+
+bot = commands.Bot(command_prefix = "`", intents = intents)
 
 @bot.event
 async def on_ready():
     print("bot started")
     try:
         synced = await bot.tree.sync()
-        print("synced properly")
+        print(f"synced properly ({len(synced)} commands)")
     except Exception as err:
         print(f"unable to sync properly with exception: {err}")
 
@@ -24,37 +28,75 @@ async def affirm(interaction: discord.Interaction):
 @bot.tree.command(name = "join", description = "joins ur vc")
 async def join(interaction: discord.Interaction):
     try:
+        await interaction.response.send_message("omw", ephemeral = True)
         await (interaction.user.voice.channel).connect()
     except Exception as err:
         await interaction.response.send_message(f"unable to join voice with exception: {err}")
 
 @bot.tree.command(name = "leave", description = "leaves voice")
 async def leave(interaction: discord.Interaction):
-    try:
-        await (interaction.guild.voice_client).disconnect()
-    except Exception as err:
-        await interaction.response.send_message(f"unable to leave voice with exception: {err}")
+    bot_voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
+    if bot_voice_client != None:
+        try:
+            await (bot_voice_client).disconnect()
+            await interaction.response.send_message("byeee", ephemeral = True)
+        except Exception as err:
+            print(f"bot was unable to leave voice with the exception: {err}")
+            await interaction.response.send_message(f"something went wrong while attempting to leave the vc, check the console for details", ephemeral = True)
+    else:
+        await interaction.response.send_message(f"im not in vc", ephemeral = True)
 
 @bot.tree.command(name = "debug", description = "debug tool")
 async def debug(interaction: discord.Interaction):
     try:
-        await interaction.response.send_message(f"ur voice channel is {interaction.user.voice.channel}, + \
-                                                ur voice state is ")
+        await interaction.response.send_message(f"check console")
+        print(f"user: {interaction.user}")
+        print(f"user voice channel: {interaction.user.voice.channel}")
+        print(f"user voice client: {interaction.guild.voice_client}")
+        print(f"user voice state: {interaction.user.voice}")
+        print(f"bot channel: {interaction.guild.voice_channels}")
+        print(f"bot voice client: {discord.utils.get(bot.voice_clients, guild=interaction.guild)}")
+        print(f"current guild id: {interaction.guild_id}")
+        print(f"current guild: {interaction.guild}")
+
+        if (interaction.guild.voice_client) == (discord.utils.get(bot.voice_clients, guild=interaction.guild)):
+            print("bot and user have same voice client")
+
     except Exception as err:
         await interaction.response.send_message(f"wow, even the debug has errors... {err}")
 
-@bot.tree.command(name = "playtest", description = "convertstext")
-@app_commands.describe(text = "text to be converted")
-async def playtest(interaction: discord.Interaction, text: str):
-    testlink = "http://noproblo.dayjo.org/ZeldaSounds/WW_New/WW_MainMenu_Start.wav"
+@bot.tree.command(name = "sync", description = "syncs commands")
+async def sync(interaction: discord.Interaction):
+    try:
+        await bot.tree.sync(guild=discord.Object(id=1043400553385955350))
+        await interaction.response.send_message(f"synced commands properly")
+    except Exception as err:
+        await interaction.response.send_message(f"unable to sync with exception: {err}")
 
-    current_voice = interaction.guild.voice_client
-    play_source = discord.FFmpegPCMAudio(source=testlink, executable='ffmpeg')
-    await current_voice.play(source=play_source, after=None)
-    await interaction.response.send_message(f"attempting to play {text}")
+@bot.tree.command(name = "tts", description = "reads text in the funny tiktok voice")
+async def tts(interaction: discord.Interaction, text: str):
+    try:
+        await interaction.response.send_message(f"converting: `\"{text}\"`", ephemeral=True)
 
+        converted_text = request_tts_conversion(text)
+        vc = interaction.guild.voice_client
+        player = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(converted_text))
 
+        vc.play(player)
+        await interaction.followup.send("This is a followup message, sent after proper audio conversion", ephemeral = "True")   # added this wihtout testing
 
+    except Exception as err:
+        await interaction.response.send_message("something went wrong")
+        print(f"Exception: {err}")
+
+@bot.tree.command(name = "test", guild=(discord.Object(id=1043400553385955350)))
+async def test(interaction: discord.Interaction, param: str):
+    if param == "1":
+        await interaction.response.send_message("send_message")
+    elif param == "2":
+        await interaction.followup.send("followup message")
+    elif param == "3":
+        await interaction.delete_original_response()
 
 
 if __name__ == "__main__":

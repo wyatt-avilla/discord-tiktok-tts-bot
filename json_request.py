@@ -11,4 +11,7 @@ def request_tts_conversion(input_text): # requests for base64 audio conversion o
 
     response = (requests.post(url, headers=headers, data=json.dumps(data))).json()
 
-    return ("data:audio/mpeg;base64," + response["data"])
+    if response["success"] == True:
+        return ("data:audio/mpeg;base64," + response["data"])
+    else: 
+        return "./error-responses/conversion-error.mp3"
