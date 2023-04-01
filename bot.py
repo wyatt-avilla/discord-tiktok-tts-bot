@@ -119,7 +119,6 @@ async def tts(interaction: discord.Interaction, voice: str, text: str):
         except Exception as err:
             await interaction.response.send_message("something went wrong", ephemeral=True)
             print(f"Exception: {err}")
-
     else: 
         try:
             await (interaction.user.voice.channel).connect()
@@ -138,6 +137,57 @@ async def tts(interaction: discord.Interaction, voice: str, text: str):
         except Exception as err:
             await interaction.response.send_message("something went wrong", ephemeral=True)
             print(f"Exception: {err}")
+
+@bot.tree.command(name = "sing", description = "sings given text", guild=(discord.Object(id=1043400553385955350)))
+@app_commands.describe(voice = "the voice to be used", text = "text to be sung")
+@app_commands.choices(voice = [
+    Choice(name = "Alto Singing", value = "en_female_f08_salut_damour"),
+    Choice(name = "Tenor Singing", value = "en_male_m03_lobby"),
+    Choice(name = "Sunshine Soon", value = "en_male_m03_sunshine_soon"),
+    Choice(name = "Warmy Breeze", value = "en_female_f08_warmy_breeze"),
+    Choice(name = "Glorious", value = "en_female_ht_f08_glorious"),
+    Choice(name = "It Goes Up", value = "en_male_sing_funny_it_goes_up"),
+    Choice(name = "Chipmunk", value = "en_male_m2_xhxs_m03_silly"),
+    Choice(name = "Dramatic", value = "en_female_ht_f08_wonderful_world"),
+])
+async def sing(interaction: discord.Interaction, voice: str, text: str):
+    bot_voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
+
+    if bot_voice_client != None:
+        try:
+            converted_text = request_tts_conversion(text, voice)
+            vc = interaction.guild.voice_client
+            player = discord.FFmpegPCMAudio(source= converted_text)
+
+            vc.play(player)
+
+            await interaction.response.send_message(f"successfully sung: `\"{text}\"`", ephemeral = True)
+
+        except Exception as err:
+            await interaction.response.send_message("something went wrong", ephemeral=True)
+            print(f"Exception: {err}")
+    else: 
+        try:
+            await (interaction.user.voice.channel).connect()
+        except Exception as err:
+            await interaction.response.send_message(f"attempt to join voice failed", ephemeral= True)
+            print(err)
+        try:
+            converted_text = request_tts_conversion(text, voice)
+            vc = interaction.guild.voice_client
+            player = discord.FFmpegPCMAudio(source= converted_text)
+
+            vc.play(player)
+
+            await interaction.response.send_message(f"successfully sung: `\"{text}\"`", ephemeral= True)
+
+        except Exception as err:
+            await interaction.response.send_message("something went wrong", ephemeral=True)
+            print(f"Exception: {err}")
+
+
+
+
 
 
 
