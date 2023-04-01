@@ -11,3 +11,11 @@ Uses the same API as [this](https://github.com/Weilbyte/tiktok-tts) repo
 - `sensitive.py` houses discord bot token
 - `json-request.py` responsible for requesting base64 audio conversion
 - `python-dependencies.sh` installs needed dependencies
+
+# Dependencies
+
+## Python
+`pip install -U discord `
+
+## OS
+- [FFmpeg](https://ffmpeg.org/)

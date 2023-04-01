@@ -28,8 +28,8 @@ async def affirm(interaction: discord.Interaction):
 @bot.tree.command(name = "join", description = "joins ur vc")
 async def join(interaction: discord.Interaction):
     try:
-        await interaction.response.send_message("omw", ephemeral = True)
         await (interaction.user.voice.channel).connect()
+        await interaction.response.send_message("omw", ephemeral = True)
     except Exception as err:
         await interaction.response.send_message(f"unable to join voice with exception: {err}")
 
@@ -73,30 +73,39 @@ async def sync(interaction: discord.Interaction):
     except Exception as err:
         await interaction.response.send_message(f"unable to sync with exception: {err}")
 
-@bot.tree.command(name = "tts", description = "reads text in the funny tiktok voice")
+@bot.tree.command(name = "tts", description = "reads text in the funny tiktok voice", guild=(discord.Object(id=1043400553385955350)))
+@app_commands.describe(text = "text to be converted to to speech")
 async def tts(interaction: discord.Interaction, text: str):
-    try:
-        await interaction.response.send_message(f"converting: `\"{text}\"`", ephemeral=True)
 
+    try:
         converted_text = request_tts_conversion(text)
         vc = interaction.guild.voice_client
-        player = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(converted_text))
+        player = discord.FFmpegPCMAudio(source= converted_text)
 
         vc.play(player)
-        await interaction.followup.send("This is a followup message, sent after proper audio conversion", ephemeral = "True")   # added this wihtout testing
+
+        await interaction.response.send_message(f"successfully converted: `\"{text}\"`", ephemeral = True)
 
     except Exception as err:
-        await interaction.response.send_message("something went wrong")
+        await interaction.response.send_message("something went wrong", ephemeral=True)
         print(f"Exception: {err}")
+
+
 
 @bot.tree.command(name = "test", guild=(discord.Object(id=1043400553385955350)))
 async def test(interaction: discord.Interaction, param: str):
+    #print(f"The state of this interaction is: {interaction.is_expired()}")
+    print(f"this interaction expires at: {interaction.expires_at}")
+
     if param == "1":
         await interaction.response.send_message("send_message")
     elif param == "2":
         await interaction.followup.send("followup message")
     elif param == "3":
         await interaction.delete_original_response()
+    elif param == "4":
+        await interaction.response.defer()
+        await interaction.followup("followed up here !")
 
 
 if __name__ == "__main__":
