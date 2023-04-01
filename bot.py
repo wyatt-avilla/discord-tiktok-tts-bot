@@ -77,18 +77,43 @@ async def sync(interaction: discord.Interaction):
 @app_commands.describe(text = "text to be converted to to speech")
 async def tts(interaction: discord.Interaction, text: str):
 
-    try:
-        converted_text = request_tts_conversion(text)
-        vc = interaction.guild.voice_client
-        player = discord.FFmpegPCMAudio(source= converted_text)
+    bot_voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
 
-        vc.play(player)
+    if bot_voice_client != None:
+        try:
+            converted_text = request_tts_conversion(text)
+            vc = interaction.guild.voice_client
+            player = discord.FFmpegPCMAudio(source= converted_text)
 
-        await interaction.response.send_message(f"successfully converted: `\"{text}\"`", ephemeral = True)
+            vc.play(player)
 
-    except Exception as err:
-        await interaction.response.send_message("something went wrong", ephemeral=True)
-        print(f"Exception: {err}")
+            await interaction.response.send_message(f"successfully converted: `\"{text}\"`", ephemeral = True)
+
+        except Exception as err:
+            await interaction.response.send_message("something went wrong", ephemeral=True)
+            print(f"Exception: {err}")
+
+    else: 
+        try:
+            await (interaction.user.voice.channel).connect()
+            await interaction.response.send_message("omw", ephemeral = True)
+        except Exception as err:
+            await interaction.response.send_message(f"attempt to join voice failed", ephemeral= True)
+            print(err)
+
+        try:
+            converted_text = request_tts_conversion(text)
+            vc = interaction.guild.voice_client
+            player = discord.FFmpegPCMAudio(source= converted_text)
+
+            vc.play(player)
+
+            await interaction.response.send_message(f"successfully converted: `\"{text}\"`", ephemeral= True)
+
+        except Exception as err:
+            await interaction.response.send_message("something went wrong", ephemeral=True)
+            print(f"Exception: {err}")
+
 
 
 

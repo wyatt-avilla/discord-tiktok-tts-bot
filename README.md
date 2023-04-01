@@ -15,7 +15,7 @@ Uses the same API as [this](https://github.com/Weilbyte/tiktok-tts) repo
 # Dependencies
 
 ## Python
-`pip install -U discord `
+`pip install -U discord requests PyNaCl`
 
 ## OS
 - [FFmpeg](https://ffmpeg.org/)
