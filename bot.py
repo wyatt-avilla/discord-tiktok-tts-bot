@@ -1,5 +1,6 @@
 import discord
 from discord import app_commands
+from discord.app_commands import Choice
 from discord.ext import commands
 from json_request import request_tts_conversion
 from sensitive import TOKEN
@@ -74,14 +75,40 @@ async def sync(interaction: discord.Interaction):
         await interaction.response.send_message(f"unable to sync with exception: {err}")
 
 @bot.tree.command(name = "tts", description = "reads text in the funny tiktok voice", guild=(discord.Object(id=1043400553385955350)))
-@app_commands.describe(text = "text to be converted to to speech")
-async def tts(interaction: discord.Interaction, text: str):
-
+@app_commands.describe(voice = "the voice to be used", text = "text to be converted to to speech")
+@app_commands.choices(voice = [
+    Choice(name = "American Woman", value = "en_us_001"),
+    Choice(name = "American Man 1", value = "en_us_006"),
+    Choice(name = "American Man 2", value = "en_us_007"),
+    Choice(name = "American Man 3", value = "en_us_008"),
+    Choice(name = "American Man 4", value = "en_us_010"),
+    Choice(name = "British Man 1", value = "en_uk_001"),
+    Choice(name = "British Man 2", value = "en_uk_003"),
+    Choice(name = "Australian Woman", value = "en_au_001"),
+    Choice(name = "Australian Man", value = "en_au_002"),
+    Choice(name = "German Man", value = "de_002"),
+    Choice(name = "Spanish Man", value = "es_002"),
+    Choice(name = "Spanish (MX) Man", value = "es_mx_002"),
+    Choice(name = "Indonesian Woman", value = "id_001"),
+    Choice(name = "Japanese Woman 1", value = "jp_001"),
+    Choice(name = "Japanese Woman 2", value = "jp_003"),
+    Choice(name = "Japanese Woman 3", value = "jp_005"),
+    Choice(name = "Japanese Man", value = "jp_006"),
+    Choice(name = "Korean Man", value = "kr_004"),
+    Choice(name = "Korean Woman", value = "kr_003"),
+    Choice(name = "Ghostface", value = "en_us_ghostface"),
+    Choice(name = "Chewbacca", value = "en_us_chewbacca"),
+    Choice(name = "C3PO", value = "en_us_c3po"),
+    Choice(name = "Stitch", value = "en_us_stitch"),
+    Choice(name = "Stormtrooper", value = "en_us_stormtrooper"),
+    Choice(name = "Rocket", value = "en_us_rocket"),
+])
+async def tts(interaction: discord.Interaction, voice: str, text: str):
     bot_voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
 
     if bot_voice_client != None:
         try:
-            converted_text = request_tts_conversion(text)
+            converted_text = request_tts_conversion(text, voice)
             vc = interaction.guild.voice_client
             player = discord.FFmpegPCMAudio(source= converted_text)
 
@@ -96,13 +123,11 @@ async def tts(interaction: discord.Interaction, text: str):
     else: 
         try:
             await (interaction.user.voice.channel).connect()
-            await interaction.response.send_message("omw", ephemeral = True)
         except Exception as err:
             await interaction.response.send_message(f"attempt to join voice failed", ephemeral= True)
             print(err)
-
         try:
-            converted_text = request_tts_conversion(text)
+            converted_text = request_tts_conversion(text, voice)
             vc = interaction.guild.voice_client
             player = discord.FFmpegPCMAudio(source= converted_text)
 
