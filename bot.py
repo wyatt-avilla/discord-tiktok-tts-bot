@@ -25,10 +25,10 @@ async def join(interaction: discord.Interaction):
     user_voice_channel = interaction.user.voice
     if user_voice_channel != None:
         try:
-            await (user_voice_channel).connect()
+            await (user_voice_channel.channel).connect()
             await interaction.response.send_message("omw", ephemeral = True)
         except Exception as err:
-            await interaction.response.send_message(f"unable to join voice")
+            await interaction.response.send_message(f"unable to join voice", ephemeral=True)
             print(f"bot was unable to join voice with exception: {err}")
     else:
         await interaction.response.send_message("u have to be in a voice call to use this command")
@@ -42,14 +42,14 @@ async def leave(interaction: discord.Interaction):
             await interaction.response.send_message("byeee", ephemeral = True)
         except Exception as err:
             print(f"bot was unable to leave voice with the exception: {err}")
-            await interaction.response.send_message(f"something went wrong while attempting to leave the vc, check the console for details", ephemeral = True)
+            await interaction.response.send_message(f"something went wrong while attempting to leave the vc", ephemeral = True)
     else:
         await interaction.response.send_message(f"im not in vc", ephemeral = True)
 
 @bot.tree.command(name = "tts", description = "reads text in the funny tiktok voice")
 @app_commands.describe(voice = "the voice to be used", text = "text to be converted to to speech")
 @app_commands.choices(voice = [
-    Choice(name = "American Woman", value = "en_us_001"),
+    Choice(name = "Classic", value = "en_us_001"),
     Choice(name = "American Man 1", value = "en_us_006"),
     Choice(name = "American Man 2", value = "en_us_007"),
     Choice(name = "American Man 3", value = "en_us_008"),
