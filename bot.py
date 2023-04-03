@@ -77,6 +77,7 @@ async def leave(interaction: discord.Interaction):
 ])
 async def tts(interaction: discord.Interaction, voice: str, text: str):
     bot_voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
+    print(f"{interaction.user} attempted to convert: {text}")
 
     if bot_voice_client != None:                                                                                # triggers if the bot is already connected to 
         try:                                                                                                    # a voice channel in the current server

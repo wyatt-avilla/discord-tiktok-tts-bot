@@ -2,6 +2,10 @@ import requests
 import json
 
 def request_tts_conversion(input_text, chosen_voice):                                       # input_text and chosen_voice are passed from the /tts command in bot.py
+
+    if len(input_text) > 300:                                                               # ensures appropriate length for HTTP request
+        return "./error-responses/length-error.mp3"
+
     ENDPOINT = "https://tiktok-tts.weilnet.workers.dev"
 
     url = f"{ENDPOINT}/api/generation"
