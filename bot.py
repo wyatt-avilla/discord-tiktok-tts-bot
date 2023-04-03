@@ -20,7 +20,7 @@ async def on_ready():
     except Exception as err:
         print(f"unable to sync properly with exception: {err}")
 
-@bot.tree.command(name = "join", description = "joins ur vc")
+@bot.tree.command(name = "join", description = "joins ur vc")                                                   # /join command
 async def join(interaction: discord.Interaction):
     user_voice_channel = interaction.user.voice
     if user_voice_channel != None:
@@ -33,7 +33,7 @@ async def join(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("u have to be in a voice call to use this command")
 
-@bot.tree.command(name = "leave", description = "leaves voice")
+@bot.tree.command(name = "leave", description = "leaves voice")                                                 # /leave command
 async def leave(interaction: discord.Interaction):
     bot_voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
     if bot_voice_client != None:
@@ -46,10 +46,10 @@ async def leave(interaction: discord.Interaction):
     else:
         await interaction.response.send_message(f"im not in vc", ephemeral = True)
 
-@bot.tree.command(name = "tts", description = "reads text in the funny tiktok voice")
+@bot.tree.command(name = "tts", description = "reads text in a funny tiktok voice")                             # /tts command
 @app_commands.describe(voice = "the voice to be used", text = "text to be converted to to speech")
-@app_commands.choices(voice = [
-    Choice(name = "Classic", value = "en_us_001"),
+@app_commands.choices(voice = [                                                                                 # values for the choices are passed to
+    Choice(name = "Classic", value = "en_us_001"),                                                              # json_request.py and sent in an HTTP request
     Choice(name = "American Man 1", value = "en_us_006"),
     Choice(name = "American Man 2", value = "en_us_007"),
     Choice(name = "American Man 3", value = "en_us_008"),
@@ -78,8 +78,8 @@ async def leave(interaction: discord.Interaction):
 async def tts(interaction: discord.Interaction, voice: str, text: str):
     bot_voice_client = discord.utils.get(bot.voice_clients, guild=interaction.guild)
 
-    if bot_voice_client != None:
-        try:
+    if bot_voice_client != None:                                                                                # triggers if the bot is already connected to 
+        try:                                                                                                    # a voice channel in the current server
             converted_text = request_tts_conversion(text, voice)
             vc = interaction.guild.voice_client
             player = discord.FFmpegPCMAudio(source= converted_text)
@@ -91,8 +91,8 @@ async def tts(interaction: discord.Interaction, voice: str, text: str):
         except Exception as err:
             await interaction.response.send_message("something went wrong", ephemeral=True)
             print(f"Exception: {err}")
-    else: 
-        try:
+    else:                                                                                                      # if the bot isn't in a voice call, it attempts
+        try:                                                                                                   # to join before playing TTS
             await (interaction.user.voice.channel).connect()
         except Exception as err:
             await interaction.response.send_message(f"attempt to join voice failed", ephemeral= True)

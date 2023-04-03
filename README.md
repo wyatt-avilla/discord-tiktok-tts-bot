@@ -1,8 +1,10 @@
 # Invite link
-- TBA
+- Not currently public. If you're interested, feel free to reach out and I'll probably give you access.
 
-# Functionality (not currently implimented)
-- `/tts` plays the given text in voice
+# Functionality
+- `/tts` plays the given text in the chosen voice
+- `/join` joins your voice channel
+- `/leave` disconnects the bot if it's in a voice channel
 
 # Credit
 Uses the same API as [this](https://github.com/Weilbyte/tiktok-tts) repo
@@ -10,7 +12,7 @@ Uses the same API as [this](https://github.com/Weilbyte/tiktok-tts) repo
 # File Descriptions
 - `sensitive.py` houses discord bot token
 - `json-request.py` responsible for requesting base64 audio conversion
-- `python-dependencies.sh` installs needed dependencies
+- `bot.py` core bot functionality
 
 # Dependencies
 
@@ -18,4 +20,10 @@ Uses the same API as [this](https://github.com/Weilbyte/tiktok-tts) repo
 `pip install -U discord requests PyNaCl`
 
 ## OS
-- [FFmpeg](https://ffmpeg.org/)
+
+### Windows
+- [Python 3.10+](https://www.python.org/downloads/)
+- [FFmpeg](https://ffmpeg.org/) (with it added as a path environment variable)
+
+### Ubuntu
+`apt-get install python3 python3-pip python-dev-is-python3 build-essential libssl-dev libffi-dev ffmpeg`
