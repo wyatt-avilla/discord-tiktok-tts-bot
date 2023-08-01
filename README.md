@@ -1,15 +1,23 @@
 # Invite link
+
 - Not currently public. If you're interested, feel free to reach out and I'll probably give you access.
 
 # Functionality
+
 - `/tts` plays the given text in the chosen voice
 - `/join` joins your voice channel
 - `/leave` disconnects the bot if it's in a voice channel
 
+# Demo
+
+https://github.com/wyatt-avilla/discord-tiktok-tts-bot/assets/10538866/188f602a-0260-4f22-b8e7-1bc74b5f3d51
+
 # Credit
+
 Uses the same API as [this](https://github.com/Weilbyte/tiktok-tts) repo
 
 # File Descriptions
+
 - `sensitive.py` houses discord bot token
 - `json-request.py` responsible for requesting base64 audio conversion
 - `bot.py` core bot functionality
@@ -17,6 +25,7 @@ Uses the same API as [this](https://github.com/Weilbyte/tiktok-tts) repo
 # Dependencies
 
 ## Python
+
 `pip install -U discord requests PyNaCl`
 
 ## OS
